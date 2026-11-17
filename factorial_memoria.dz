@@ -1,0 +1,35 @@
+# Punto 1: Factorial del 5 al 100 y medicion de memoria RAM
+tactica calcular_factorial(n) {
+    acumulador = 1;
+    i = 1;
+    en_juego (i <= n) {
+        acumulador = acumulador * i;
+        i = i + 1;
+    }
+    resultado acumulador;
+}
+
+mem_inicio = memoria();
+proyectar("Memoria inicial (Bytes / KB):");
+proyectar(mem_inicio);
+
+historial = [];
+num = 5;
+en_juego (num <= 100) {
+    res = calcular_factorial(num);
+    historial = historial + [res];
+    proyectar(num);
+    proyectar(res);
+    num = num + 1;
+}
+
+mem_fin = memoria();
+proyectar("Memoria final tras calcular factoriales del 5 al 100:");
+proyectar(mem_fin);
+
+delta_bytes = mem_fin["bytes_actual"] - mem_inicio["bytes_actual"];
+delta_kb = mem_fin["kb_actual"] - mem_inicio["kb_actual"];
+proyectar("Memoria adicional consumida (Bytes):");
+proyectar(delta_bytes);
+proyectar("Memoria adicional consumida (KB):");
+proyectar(delta_kb);

@@ -1,0 +1,48 @@
+# Punto 3: Perceptron Multicapa (MLP) para XOR - Estimador y Graficas
+X_xor = [[0, 0], [0, 1], [1, 0], [1, 1]];
+Y_xor = [0, 1, 1, 0];
+
+red = entrenar_mlp(X_xor, Y_xor, 3000, 0.8);
+proyectar("Arquitectura de la red:");
+proyectar(red["arquitectura"]);
+proyectar("Error cuadratico medio (MSE) final:");
+proyectar(red["error_final"]);
+
+# Evaluacion del ESTIMADOR sobre las 4 combinaciones XOR
+e00 = estimar_mlp(red, [0, 0]);
+e01 = estimar_mlp(red, [0, 1]);
+e10 = estimar_mlp(red, [1, 0]);
+e11 = estimar_mlp(red, [1, 1]);
+
+c00 = clasificar_mlp(red, [0, 0]);
+c01 = clasificar_mlp(red, [0, 1]);
+c10 = clasificar_mlp(red, [1, 0]);
+c11 = clasificar_mlp(red, [1, 1]);
+
+tabla_estimaciones = [
+    {"entrada": "0_XOR_0", "esperado": 0, "estimado": e00, "clase": c00},
+    {"entrada": "0_XOR_1", "esperado": 1, "estimado": e01, "clase": c01},
+    {"entrada": "1_XOR_0", "esperado": 1, "estimado": e10, "clase": c10},
+    {"entrada": "1_XOR_1", "esperado": 0, "estimado": e11, "clase": c11}
+];
+
+proyectar("Resultados del Estimador MLP para compuerta XOR:");
+proyectar(tabla_estimaciones);
+
+# Grafica 1: Curva de convergencia del error durante el entrenamiento
+pizarra lineas(red["historial_error"]) {
+    eje_x = "epoca";
+    eje_y = "error";
+    titulo = "MLP XOR - Convergencia del Error (MSE)";
+    color = "crimson";
+    guardar = "salidas/xor_curva_error.png";
+}
+
+# Grafica 2: Salida continua del Estimador MLP por cada combinacion XOR
+pizarra barras(tabla_estimaciones) {
+    eje_x = "entrada";
+    eje_y = "estimado";
+    titulo = "MLP XOR - Probabilidad Estimada por Entrada";
+    color = "royalblue";
+    guardar = "salidas/xor_estimador.png";
+}

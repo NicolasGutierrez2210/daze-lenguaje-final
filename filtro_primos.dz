@@ -1,52 +1,63 @@
-# Función (tactica) pura que determina si un número entero es primo
-tactica es_primo(n) {
-    # Todo número menor o igual a 1 no es primo
-    si (n <= 1) {
-        resultado falso;
-    }
-    
-    # El 2 es el único número primo par
-    si (n == 2) {
-        resultado verdadero;
-    }
-    
-    # Descartamos pares mayores a 2 y decimales (n % 1 != 0)
-    si (n % 2 == 0 o n % 1 != 0) {
-        resultado falso;
-    }
-    
-    # Probamos divisores impares desde 3 hasta la raíz cuadrada de n
-    divisor = 3;
-    limite = raiz(n);
-    en_juego (divisor <= limite) {
-        si (n % divisor == 0) {
-            resultado falso;
+# Punto 5: Filtro funcional de datos primos (goles, dorsales y columnas numericas)
+
+# Funcion (tactica) pura que filtra funcionalmente una lista dejando solo primos
+tactica filtrar_primos(lista) {
+    primos = [];
+    ronda (x en lista) {
+        si (es_primo(x)) {
+            primos = primos + [x];
         }
-        divisor = divisor + 2;
     }
-    
-    resultado verdadero;
+    resultado primos;
 }
 
-# --- EJEMPLO 1: Filtrar una tabla CSV por columna numérica (ej. dorsal o goles) ---
 plantilla = fichar("datos/rendimiento_jugadores.csv");
 
-jugadores_dorsal_primo = plantilla
-    |> convocar(dorsal, nombre, posicion, goles)
-    |> descartar(es_primo(dorsal));
+# 1. FILTRO FUNCIONAL EN LISTAS PARA TODAS LAS COLUMNAS NUMERICAS
+lista_dorsales = [];
+lista_goles = [];
+lista_asistencias = [];
+lista_minutos = [];
+lista_pases = [];
+lista_recuperaciones = [];
 
-proyectar("Jugadores con dorsal primo:");
-proyectar(jugadores_dorsal_primo);
-
-# --- EJEMPLO 2: Filtrar una lista numérica cualquiera ---
-numeros = [1, 2, 3, 4, 7, 10, 11, 15, 17, 20, 23, 25, 29];
-primos_lista = [];
-
-ronda (num en numeros) {
-    si (es_primo(num)) {
-        primos_lista = primos_lista + [num];
-    }
+ronda (fila en plantilla) {
+    lista_dorsales = lista_dorsales + [fila["dorsal"]];
+    lista_goles = lista_goles + [fila["goles"]];
+    lista_asistencias = lista_asistencias + [fila["asistencias"]];
+    lista_minutos = lista_minutos + [fila["minutos"]];
+    lista_pases = lista_pases + [fila["pases_clave"]];
+    lista_recuperaciones = lista_recuperaciones + [fila["recuperaciones"]];
 }
 
-proyectar("Primos filtrados de la lista:");
-proyectar(primos_lista);
+proyectar("=== FILTRO FUNCIONAL DE PRIMOS EN LISTAS ===");
+proyectar("Dorsales primos encontrados:");
+proyectar(filtrar_primos(lista_dorsales));
+
+proyectar("Goles primos encontrados:");
+proyectar(filtrar_primos(lista_goles));
+
+proyectar("Asistencias primas encontradas:");
+proyectar(filtrar_primos(lista_asistencias));
+
+proyectar("Minutos primos encontrados:");
+proyectar(filtrar_primos(lista_minutos));
+
+proyectar("Pases clave primos encontrados:");
+proyectar(filtrar_primos(lista_pases));
+
+proyectar("Recuperaciones primas encontradas:");
+proyectar(filtrar_primos(lista_recuperaciones));
+
+# 2. FILTRO TABULAR CON PIPELINE (|>) POR GOLES Y DORSALES PRIMOS
+proyectar("=== TABLA: JUGADORES CON CANTIDAD DE GOLES PRIMA ===");
+tabla_goles_primos = plantilla
+    |> convocar(dorsal, nombre, posicion, goles, asistencias)
+    |> descartar(es_primo(goles));
+proyectar(tabla_goles_primos);
+
+proyectar("=== TABLA: JUGADORES CON DORSAL PRIMO ===");
+tabla_dorsales_primos = plantilla
+    |> convocar(dorsal, nombre, posicion, goles, asistencias)
+    |> descartar(es_primo(dorsal));
+proyectar(tabla_dorsales_primos);

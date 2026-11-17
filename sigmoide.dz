@@ -1,33 +1,15 @@
-tactica exp_puro(x) {
-    suma = 1.0;
-    termino = 1.0;
-    k = 1;
-    en_juego (k <= 25) {
-        termino = (termino * x) / k;
-        suma = suma + termino;
-        k = k + 1;
-    }
-    resultado suma;
+puntos = [];
+x = -6;
+en_juego (x <= 6) {
+    y = sigmoide(x);
+    puntos = puntos + [{"x": x, "y": y}];
+    x = x + 1;
 }
-
-tactica sigmoide(x) {
-    resultado 1.0 / (1.0 + exp_puro(0 - x));
-}
-
-tabla_sigmoide = fichar("datos/rendimiento_jugadores.csv")
-    |> top(13)
-    |> convocar(dorsal)
-    |> contratar(
-        x = dorsal - 7,
-        y = sigmoide(x)
-    );
-
-proyectar(tabla_sigmoide);
-
-pizarra lineas(tabla_sigmoide) {
+proyectar(puntos);
+pizarra lineas(puntos) {
     eje_x = "x";
     eje_y = "y";
-    titulo = "Funcion de Activacion Sigmoide";
+    titulo = "Funcion Sigmoide";
     color = "royalblue";
     guardar = "salidas/funcion_sigmoide.png";
 }

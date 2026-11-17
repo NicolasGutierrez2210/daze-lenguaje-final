@@ -7,7 +7,7 @@ from src.generated.DaZeParser import DaZeParser
 from src.generated.DaZeParserVisitor import DaZeParserVisitor
 from src.core.racoons import Tabla, GrupoTabla
 from src.core.visualizador import renderizar_pizarra_nativa
-from src.core.ml import correlacion_pearson, RegresionLineal, KMeans
+from src.core.ml import correlacion_pearson, RegresionLineal, KMeans, entrenar_mlp, estimar_mlp, clasificar_mlp
 from src.core.estructuras import Pila, Cola
 import src.core.matematica as mate
 from src.semantic.tabla_simbolos import TablaSimbolos, Simbolo
@@ -55,6 +55,15 @@ class DaZeSemanticVisitor(DaZeParserVisitor):
             "tangente": mate.tangente,
             "abs": mate.valor_absoluto,
             "potencia": mate.potencia,
+            "exp": mate.exp,
+            "sigmoide": mate.sigmoide,
+            "factorial": mate.factorial,
+            "es_primo": mate.es_primo,
+            "memoria": mate.memoria,
+            "entrenar_mlp": entrenar_mlp,
+            "estimar_mlp": estimar_mlp,
+            "predecir_mlp": estimar_mlp,
+            "clasificar_mlp": clasificar_mlp,
             "maximo": mate.maximo_coleccion,
             "minimo": mate.minimo_coleccion,
             "promedio": mate.promedio_coleccion,
@@ -459,6 +468,12 @@ class DaZeSemanticVisitor(DaZeParserVisitor):
         valor_tabla = self.visit(ctx.expr())
         if isinstance(valor_tabla, GrupoTabla):
             valor_tabla = valor_tabla.tabla_origen
+        elif isinstance(valor_tabla, list) and len(valor_tabla) > 0 and isinstance(valor_tabla[0], dict):
+            valor_tabla = Tabla(list(valor_tabla[0].keys()), valor_tabla)
+        if isinstance(valor_tabla, list) and valor_tabla and isinstance(valor_tabla[0], dict):
+            valor_tabla = Tabla(list(valor_tabla[0].keys()), valor_tabla)
+        if isinstance(valor_tabla, list) and valor_tabla and isinstance(valor_tabla[0], dict):
+            valor_tabla = Tabla(list(valor_tabla[0].keys()), valor_tabla)
         if not isinstance(valor_tabla, Tabla):
             raise self._error("La instruccion 'archivar' requiere una tabla deportiva valida como primer argumento.", ctx)
 
@@ -501,6 +516,8 @@ class DaZeSemanticVisitor(DaZeParserVisitor):
         if isinstance(valor_tabla, GrupoTabla):
             valor_tabla = valor_tabla.tabla_origen
 
+        if isinstance(valor_tabla, list) and valor_tabla and isinstance(valor_tabla[0], dict):
+            valor_tabla = Tabla(list(valor_tabla[0].keys()), valor_tabla)
         if not isinstance(valor_tabla, Tabla):
             raise self._error(f"La declaracion de pizarra '{tipo}' requiere una tabla deportiva valida.", ctx.expr())
 

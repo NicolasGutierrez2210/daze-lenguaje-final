@@ -175,3 +175,111 @@ regresionlineal = regresion_lineal
 predecir = predecir_regresion
 agruparkmedias = agrupar_kmedias
 kmedias = agrupar_kmedias
+
+
+def _mlp_exp(x):
+    if x < -50:
+        return 0.0
+    if x > 50:
+        x = 50.0
+    if x < 0:
+        return 1.0 / _mlp_exp(-x)
+    k = 0
+    val = float(x)
+    while val > 1.0:
+        val /= 2.0
+        k += 1
+    suma = 1.0
+    termino = 1.0
+    for i in range(1, 30):
+        termino = (termino * val) / i
+        suma += termino
+    for _ in range(k):
+        suma *= suma
+    return suma
+
+
+def _mlp_sig(x):
+    if x >= 0:
+        return 1.0 / (1.0 + _mlp_exp(-x))
+    ex = _mlp_exp(x)
+    return ex / (1.0 + ex)
+
+
+class PerceptronMulticapa:
+    def __init__(self, ocultas=4, lr=0.8, epocas=3000):
+        self.ocultas = ocultas
+        self.lr = float(lr)
+        self.epocas = int(epocas)
+        self.w1 = [
+            [0.45, -0.35],
+            [-0.55, 0.65],
+            [0.30, 0.50],
+            [-0.40, -0.60],
+        ]
+        self.b1 = [0.1, -0.1, 0.2, -0.2]
+        self.w2 = [0.5, -0.6, 0.4, -0.5]
+        self.b2 = 0.05
+        self.historial_error = []
+
+    def _forward(self, x):
+        h = []
+        for j in range(self.ocultas):
+            z = self.b1[j] + self.w1[j][0] * x[0] + self.w1[j][1] * x[1]
+            h.append(_mlp_sig(z))
+        z_out = self.b2 + sum(self.w2[j] * h[j] for j in range(self.ocultas))
+        return h, _mlp_sig(z_out)
+
+    def entrenar(self, X, Y):
+        self.historial_error = []
+        paso = max(1, self.epocas // 12)
+        for ep in range(1, self.epocas + 1):
+            err_tot = 0.0
+            for x, y in zip(X, Y):
+                h, y_hat = self._forward(x)
+                err = y - y_hat
+                err_tot += 0.5 * (err ** 2)
+                d_out = err * y_hat * (1.0 - y_hat)
+                d_h = [d_out * self.w2[j] * h[j] * (1.0 - h[j]) for j in range(self.ocultas)]
+                for j in range(self.ocultas):
+                    self.w2[j] += self.lr * d_out * h[j]
+                self.b2 += self.lr * d_out
+                for j in range(self.ocultas):
+                    self.w1[j][0] += self.lr * d_h[j] * x[0]
+                    self.w1[j][1] += self.lr * d_h[j] * x[1]
+                    self.b1[j] += self.lr * d_h[j]
+            mse = err_tot / len(X)
+            if ep == 1 or ep % paso == 0 or ep == self.epocas:
+                self.historial_error.append({"epoca": ep, "error": round(mse, 6)})
+        return self
+
+    def estimar(self, x):
+        _, y_hat = self._forward(x)
+        return round(y_hat, 6)
+
+    def clasificar(self, x):
+        return 1 if self.estimar(x) >= 0.5 else 0
+
+
+def entrenar_mlp(X, Y, epocas=3000, lr=0.8):
+    mlp = PerceptronMulticapa(ocultas=4, lr=lr, epocas=epocas).entrenar(X, Y)
+    return {
+        "modelo": mlp,
+        "historial_error": mlp.historial_error,
+        "error_final": mlp.historial_error[-1]["error"],
+        "arquitectura": "2-4-1 (Sigmoide)"
+    }
+
+
+def estimar_mlp(modelo, x):
+    mlp = modelo["modelo"] if isinstance(modelo, dict) else modelo
+    if x and isinstance(x[0], list):
+        return [mlp.estimar(p) for p in x]
+    return mlp.estimar(x)
+
+
+def clasificar_mlp(modelo, x):
+    mlp = modelo["modelo"] if isinstance(modelo, dict) else modelo
+    if x and isinstance(x[0], list):
+        return [mlp.clasificar(p) for p in x]
+    return mlp.clasificar(x)

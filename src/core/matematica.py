@@ -108,3 +108,69 @@ def promedio_coleccion(lista):
     for x in lista:
         suma += x
     return round(suma / len(lista), 4)
+
+import tracemalloc
+
+if not tracemalloc.is_tracing():
+    tracemalloc.start()
+
+
+def memoria():
+    """Retorna el consumo actual y pico de memoria RAM en Bytes y KB."""
+    if not tracemalloc.is_tracing():
+        tracemalloc.start()
+    actual, pico = tracemalloc.get_traced_memory()
+    return {
+        "bytes_actual": actual,
+        "kb_actual": round(actual / 1024.0, 4),
+        "bytes_pico": pico,
+        "kb_pico": round(pico / 1024.0, 4),
+    }
+
+
+def exp(x, terminos=35):
+    """Calculo puro de e^x mediante reduccion de rango y Series de Taylor."""
+    if x < 0:
+        return 1.0 / exp(-x, terminos)
+    k = 0
+    val = float(x)
+    while val > 1.0:
+        val /= 2.0
+        k += 1
+    suma = 1.0
+    termino = 1.0
+    for i in range(1, terminos + 1):
+        termino = (termino * val) / i
+        suma += termino
+    for _ in range(k):
+        suma *= suma
+    return round(suma, 8)
+
+
+def sigmoide(x):
+    """Funcion de activacion sigmoide: 1 / (1 + e^(-x))."""
+    if x >= 0:
+        return round(1.0 / (1.0 + exp(-x)), 8)
+    ex = exp(x)
+    return round(ex / (1.0 + ex), 8)
+
+
+def es_primo(n):
+    """Determina si un numero entero es primo probando divisores hasta sqrt(n)."""
+    if isinstance(n, bool) or not isinstance(n, (int, float)):
+        return False
+    if n % 1 != 0:
+        return False
+    n = int(n)
+    if n <= 1:
+        return False
+    if n == 2:
+        return True
+    if n % 2 == 0:
+        return False
+    d = 3
+    while d * d <= n:
+        if n % d == 0:
+            return False
+        d += 2
+    return True
