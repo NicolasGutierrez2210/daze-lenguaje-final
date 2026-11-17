@@ -1,0 +1,20 @@
+# 1. Definir la función (tactica) para calcular el factorial de un número n
+tactica calcular_factorial(n) {
+    acumulador = 1;
+    contador = 1;
+    
+    en_juego (contador <= n) {
+        acumulador = acumulador * contador;
+        contador = contador + 1;
+    }
+    
+    resultado acumulador;
+}
+
+# 2. Recorrer los números del 5 al 100 e imprimir cada factorial
+numero = 5;
+en_juego (numero <= 100) {
+    proyectar(numero);
+    proyectar(calcular_factorial(numero));
+    numero = numero + 1;
+}

@@ -1,0 +1,51 @@
+# Flujo de analisis de rendimiento deportivo en DaZe
+
+# 1. Carga del conjunto de datos de plantilla
+jugadores = fichar("datos/plantilla_temporada.csv", separador=",", encabezado=verdadero);
+
+# 2. Pipeline de preparacion y calculo de variables
+jugadoresaptos = jugadores
+    |> convocar(dorsal, club, posicion, minutos, goles, asistencias)
+    |> descartar(minutos > 0 y goles >= 0)
+    |> contratar(
+        contribucion = goles + asistencias,
+        promediogol = (goles * 90) / minutos,
+        rendimientototal = (contribucion * 1.5) + (minutos / 100),
+        indiceimpacto = rendimientototal * 0.19
+    )
+    |> clasificar(por=[rendimientototal], descendente=verdadero);
+
+# 3. Agrupacion y calculo de metricas descriptivas
+resumenposiciones = jugadoresaptos
+    |> alinear(por=[posicion])
+    |> balance(
+        golestotales = suma(goles),
+        mediaasistencias = media(asistencias),
+        medianaminutos = mediana(minutos),
+        desviarendimiento = desviar(rendimientototal),
+        totalconvocados = contar()
+    );
+
+# 4. Exportar la tabla resumen obtenida
+archivar(resumenposiciones, en="salidas/resumenposiciones.csv", separador=",");
+
+# 5. Proyeccion del resultado en consola
+proyectar("Resumen por posicion generado con exito:");
+proyectar(resumenposiciones);
+
+# 6. Declaracion de visualizaciones en pizarra
+pizarra barras(resumenposiciones) {
+    eje_x = posicion;
+    eje_y = golestotales;
+    titulo = "Goles totales por posicion";
+    color = "royalblue";
+    guardar = "salidas/golesporposicion.png";
+}
+
+pizarra dispersion(jugadoresaptos) {
+    eje_x = minutos;
+    eje_y = rendimientototal;
+    titulo = "Rendimiento vs minutos disputados";
+    color = "crimson";
+    guardar = "salidas/dispersionrendimiento.png";
+}

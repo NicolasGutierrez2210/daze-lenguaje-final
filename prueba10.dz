@@ -1,0 +1,28 @@
+# 1. Cargar el archivo CSV real en memoria
+plantilla = fichar("datos/rendimiento_jugadores.csv");
+
+# 2. Crear listas vacías y llenarlas recorriendo cada fila del CSV
+mins = [];
+gols = [];
+perfiles = [];
+
+ronda (jugador en plantilla) {
+    mins = mins + [jugador["minutos"]];
+    gols = gols + [jugador["goles"]];
+    perfiles = perfiles + [[jugador["minutos"], jugador["goles"]]];
+}
+
+# 3. Correlación de Pearson usando las columnas reales del CSV
+proyectar(correlacion(mins, gols));
+
+# 4. Regresión Lineal Simple (MCO) y predicción con los datos del CSV
+modelo = regresion_lineal(mins, gols);
+proyectar(modelo["m"]);
+proyectar(modelo["b"]);
+proyectar(modelo["r2"]);
+proyectar(predecir_regresion(modelo, 1000));
+
+# 5. Agrupamiento K-Means (k=2 grupos) usando [minutos, goles] de cada fila del CSV
+grupos = agrupar_kmedias(perfiles, 2);
+proyectar(grupos["centroides"]);
+proyectar(grupos["etiquetas"]);

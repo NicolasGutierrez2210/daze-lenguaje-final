@@ -1,0 +1,130 @@
+proyectar("ANALISIS EXPLORATORIO DE DATOS (EDA) - DATOS SOCIOECONOMICOS");
+
+# 1. CARGA Y EXPLORACION INICIAL
+proyectar("\n>>> [1/5] Cargando dataset datos/data.csv...");
+datos = fichar("datos/data.csv", separador=",", encabezado=verdadero);
+proyectar("Total de registros cargados:");
+proyectar(longitud(datos));
+
+muestra_inicial = datos |> top(10);
+proyectar(muestra_inicial);
+
+# 2. TRANSFORMACION Y DERIVACION DE METRICAS (PIPELINE |>)
+proyectar("\n>>> [2/5] Creando indicadores derivados y filtrando muestra activa...");
+datos_enriquecidos = datos
+    |> descartar(edad >= 18 y ingreso_mensual > 0)
+    |> contratar(
+        ingreso_por_anio_esc = ingreso_mensual / anios_esc,
+        edad_inicio_laboral = edad - anios_esc
+    )
+    |> clasificar(por=[ingreso_mensual], descendente=verdadero);
+
+proyectar("Top 5 personas con mayor ingreso mensual (mayores de edad):");
+top_ingresos = datos_enriquecidos |> top(5);
+proyectar(top_ingresos);
+
+# 3. ESTADISTICA DESCRIPTIVA AGRUPADA (POR NIVEL EDUCATIVO Y SEXO)
+proyectar("\n>>> [3/5] Estadisticas descriptivas por nivel educativo...");
+resumen_educacion = datos_enriquecidos
+    |> alinear(por=[nivel_edu])
+    |> balance(
+        cantidad = contar(),
+        ingreso_promedio = media(ingreso_mensual),
+        ingreso_mediana = mediana(ingreso_mensual),
+        ingreso_min = minimo(ingreso_mensual),
+        ingreso_max = maximo(ingreso_mensual),
+        desv_ingreso = desviar(ingreso_mensual),
+        media_escolaridad = media(anios_esc)
+    );
+
+proyectar(resumen_educacion);
+archivar(resumen_educacion, en="salidas/eda_resumen_educacion.csv", separador=",");
+
+proyectar("\n>>> Estadisticas descriptivas por sexo...");
+resumen_sexo = datos_enriquecidos
+    |> alinear(por=[sex])
+    |> balance(
+        cantidad = contar(),
+        ingreso_promedio = media(ingreso_mensual),
+        ingreso_mediana = mediana(ingreso_mensual),
+        edad_promedio = media(edad)
+    );
+
+proyectar(resumen_sexo);
+
+# 4. MACHINE LEARNING PURO: CORRELACION, REGRESION LINEAL Y K-MEANS
+proyectar("\n>>> [4/5] Modelado predictivo y segmentacion sin librerias externas...");
+
+lista_esc = [];
+lista_ing = [];
+lista_edad = [];
+matriz_perfiles = [];
+
+ronda (fila en datos_enriquecidos) {
+    lista_esc = lista_esc + [fila["anios_esc"]];
+    lista_ing = lista_ing + [fila["ingreso_mensual"]];
+    lista_edad = lista_edad + [fila["edad"]];
+    matriz_perfiles = matriz_perfiles + [[fila["anios_esc"], fila["ingreso_mensual"]]];
+}
+
+r_esc_ing = correlacion(lista_esc, lista_ing);
+proyectar("Correlacion de Pearson (Anios de escolaridad vs Ingreso mensual):");
+proyectar(r_esc_ing);
+
+r_edad_ing = correlacion(lista_edad, lista_ing);
+proyectar("Correlacion de Pearson (Edad vs Ingreso mensual):");
+proyectar(r_edad_ing);
+
+modelo_ingreso = regresion_lineal(lista_esc, lista_ing);
+proyectar("Pendiente (m - pesos extra por cada anio de estudio):");
+proyectar(modelo_ingreso["m"]);
+proyectar("Intercepto (b):");
+proyectar(modelo_ingreso["b"]);
+proyectar("Coeficiente de determinacion (R^2):");
+proyectar(modelo_ingreso["r2"]);
+
+pred_16 = predecir_regresion(modelo_ingreso, 16);
+proyectar("Ingreso mensual estimado para alguien con 16 anios de escolaridad:");
+proyectar(pred_16);
+
+clusters = agrupar_kmedias(matriz_perfiles, 3);
+proyectar("Centroides de los 3 grupos [anios_esc, ingreso_mensual]:");
+proyectar(clusters["centroides"]);
+proyectar("Asignacion de cluster por individuo:");
+proyectar(clusters["etiquetas"]);
+
+# 5. VISUALIZACION EXPLORATORIA (ASCII + EXPORTACION PNG)
+proyectar("\n>>> [5/5] Generando graficas exploratorias en salidas/...");
+
+pizarra barras(resumen_educacion) {
+    eje_x = "nivel_edu";
+    eje_y = "ingreso_promedio";
+    titulo = "Ingreso Promedio por Nivel Educativo";
+    color = "royalblue";
+    guardar = "salidas/eda_1_ingreso_educacion.png";
+}
+
+pizarra dispersion(datos_enriquecidos) {
+    eje_x = "anios_esc";
+    eje_y = "ingreso_mensual";
+    titulo = "Anios de Escolaridad vs Ingreso Mensual";
+    color = "crimson";
+    guardar = "salidas/eda_2_dispersion_escolaridad_ingreso.png";
+}
+
+pizarra histograma(datos_enriquecidos) {
+    eje_x = "edad";
+    titulo = "Distribucion de Edad en la Muestra";
+    color = "seagreen";
+    guardar = "salidas/eda_3_histograma_edad.png";
+}
+
+pizarra barras(resumen_sexo) {
+    eje_x = "sex";
+    eje_y = "ingreso_promedio";
+    titulo = "Ingreso Promedio por Sexo";
+    color = "darkorange";
+    guardar = "salidas/eda_4_ingreso_sexo.png";
+}
+
+proyectar("\nEDA COMPLETADO EXITOSAMENTE. ARCHIVOS GUARDADOS EN salidas/");

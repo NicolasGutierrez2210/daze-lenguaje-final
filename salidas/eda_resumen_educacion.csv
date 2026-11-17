@@ -1,0 +1,5 @@
+nivel_edu,cantidad,ingreso_promedio,ingreso_mediana,ingreso_min,ingreso_max,desv_ingreso,media_escolaridad
+Medio superior y superior,9,9333.3333,9000,1000,24000,6956.2849,14.4444
+Primaria incompleta,1,4300.0,4300,4300,4300,0.0,4.0
+Prrimaria completa,3,2866.6667,3225,1075,4300,1642.0896,7.0
+Secundaria completa,6,5555.0,4730.0,3870,8260,1976.9573,9.5

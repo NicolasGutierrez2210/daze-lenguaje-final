@@ -1,0 +1,7 @@
+# Caso de prueba con error lexico intencional
+# El caracter '@' y '$' no pertenecen al alfabeto del DSL fuera de cadenas
+
+plantilla = fichar("datos/plantilla.csv");
+
+# Error lexico provocado aqui:
+jugadores_invalidos = plantilla |> descartar(minutos @ 90 $ valor);

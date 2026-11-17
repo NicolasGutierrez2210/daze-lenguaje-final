@@ -1,0 +1,10 @@
+# Caso de prueba con error sintactico intencional
+# Se omite el operador pipeline '|>' y se introducen sentencias rotas
+
+datos = fichar("datos/liga.csv");
+
+# Error sintactico: falta el operador '|>' antes de descartar y parentesis mal cerrado
+seleccion = datos descartar(goles > 5;
+
+# Error sintactico: asignacion sin expresion derecha
+titulares = ;

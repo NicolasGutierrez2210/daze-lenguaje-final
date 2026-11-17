@@ -1,0 +1,38 @@
+# Flujo de evaluacion de canteranos y divisiones menores
+
+# 1. Carga de datos de la cantera
+cantera = fichar("datos/academia_juvenil.csv", separador=",", encabezado=verdadero);
+
+# 2. Pipeline de seleccion y calculo de rendimiento academico-deportivo
+canteranospromesa = cantera
+    |> convocar(id_juvenil, nombre, categoria, nota_tactica, nota_fisica, disciplina)
+    |> descartar(nota_tactica >= 60 y disciplina >= 70)
+    |> contratar(
+        promediorendimiento = (nota_tactica * 0.6) + (nota_fisica * 0.4),
+        aptoconvocatoria = verdadero
+    )
+    |> clasificar(por=[promediorendimiento], descendente=verdadero);
+
+# 3. Agrupacion por categoria y metricas del equipo
+balancecategorias = canteranospromesa
+    |> alinear(por=[categoria])
+    |> balance(
+        promediogeneral = media(promediorendimiento),
+        maximanota = maximo(nota_tactica),
+        totalevaluados = contar()
+    );
+
+# 4. Exportar balance a archivo CSV
+archivar(balancecategorias, en="salidas/balancecantera.csv", separador=",");
+
+# 5. Proyectar en consola
+proyectar("Balance de cantera juvenil generado con exito:");
+proyectar(balancecategorias);
+
+# 6. Representacion en pizarra visual
+pizarra barras(balancecategorias) {
+    eje_x = categoria;
+    eje_y = promediogeneral;
+    titulo = "Promedio de rendimiento por categoria juvenil";
+    guardar = "salidas/rendimientojuvenil.png";
+}

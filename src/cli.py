@@ -1,0 +1,219 @@
+import os
+import sys
+
+# 1. Asegurar ruta raiz del proyecto
+RAIZ = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+if RAIZ not in sys.path:
+    sys.path.insert(0, RAIZ)
+
+try:
+    import readline
+except ImportError:
+    pass
+
+from antlr4 import InputStream, CommonTokenStream
+from src.generated.DaZeLexer import DaZeLexer
+from src.generated.DaZeParser import DaZeParser
+from src.errors import DaZeErrorListener
+from src.semantic.visitor import DaZeSemanticVisitor
+
+
+def renderizar_arbol(tree, parser):
+    try:
+        import src.tree_viewer as tv
+
+        for fn in ["imprimir_arbol_consola", "print_tree", "imprimir_arbol", "render_tree"]:
+            if hasattr(tv, fn):
+                f = getattr(tv, fn)
+                try:
+                    return f(tree, parser)
+                except TypeError:
+                    return f(tree)
+        print(tree.toStringTree(recog=parser))
+    except Exception:
+        print(tree.toStringTree(recog=parser))
+
+
+BANNER = """
+╔══════════════════════════════════════════════════════════════════════╗
+║                       DaZe: DSL deportivo :P                         ║
+║                         Consola Interactiva                          ║
+║   Para código en DaZe, 'ayuda' para comandos o 'salir' para terminar ║
+╚══════════════════════════════════════════════════════════════════════╝"""
+
+
+def ejecutar_bloque(codigo_fuente, visitor):
+    codigo_limpio = codigo_fuente.strip()
+    if not codigo_limpio:
+        return
+
+    input_stream = InputStream(codigo_fuente)
+    lexer = DaZeLexer(input_stream)
+    error_listener = DaZeErrorListener()
+    lexer.removeErrorListeners()
+    lexer.addErrorListener(error_listener)
+
+    token_stream = CommonTokenStream(lexer)
+    parser = DaZeParser(token_stream)
+    parser.removeErrorListeners()
+    parser.addErrorListener(error_listener)
+
+    tree = parser.programa()
+
+    errores = getattr(error_listener, "errors", [])
+    if errores:
+        for err in errores:
+            tipo = getattr(err, "error_type", "Sintactico")
+            linea = getattr(err, "line", "?")
+            col = getattr(err, "column", "?")
+            msg = getattr(err, "message", getattr(err, "msg", str(err)))
+            print(f"[Error {tipo}] Linea {linea}:{col} -> {msg}")
+        return
+
+    try:
+        resultado = visitor.visit(tree)
+        if resultado is not None and not codigo_limpio.endswith(";"):
+            print(f"=> {resultado}")
+    except Exception as e:
+        print(f"[Error semantico] {str(e)}")
+
+
+def iniciar_repl():
+    print(BANNER)
+    visitor = DaZeSemanticVisitor()
+    buffer_codigo = []
+    nivel_llaves = 0
+
+    while True:
+        try:
+            prompt = "daze> " if nivel_llaves == 0 else "...   "
+            linea = input(prompt)
+            linea_limpia = linea.strip()
+
+            if nivel_llaves == 0:
+                if linea_limpia in ("salir", "exit", "quit"):
+                    print("Saliendo del bosque.... ta luego")
+                    break
+
+                if linea_limpia in ("limpiar", "clear"):
+                    os.system("clear" if os.name != "nt" else "cls")
+                    print(BANNER)
+                    continue
+
+                if linea_limpia in ("ayuda", "help"):
+                    print("""
+Comandos de la consola:
+  salir / exit      : Cierra la consola interactiva.
+  limpiar / clear   : Limpia la pantalla de la terminal.
+  simbolos          : Lista las variables y tablas cargadas en memoria.
+  ayuda / help      : Muestra este menu de ayuda.
+
+Instrucciones admitidas:
+  - Asignaciones:     minutos = 90;
+  - Proyeccion:       proyectar("Hola mundo");
+  - Matematicas:      r = raiz(144);  sen = seno(1.57);
+  - Estructuras:      p = pila();  apilar(p, "Messi");
+  - Bucles:           enjuego (i < 3) { ... }  o  ronda (x en lista) { ... }
+  - Machine Learning: mod = regresionlineal([1,2,3], [2,4,6]);
+""")
+                    continue
+
+                if linea_limpia == "simbolos":
+                    print("Simbolos en memoria")
+                    ts = getattr(visitor, "tabla_simbolos", None)
+                    if ts and hasattr(ts, "simbolos"):
+                        for k, v in ts.simbolos.items():
+                            print(f"  • {k}: {v}")
+                    else:
+                        print("  (Ambito global vacio)")
+                    continue
+
+            nivel_llaves += linea.count("{") - linea.count("}")
+            buffer_codigo.append(linea)
+
+            if nivel_llaves <= 0:
+                codigo_a_ejecutar = chr(10).join(buffer_codigo)
+                ejecutar_bloque(codigo_a_ejecutar, visitor)
+                buffer_codigo = []
+                nivel_llaves = 0
+
+        except KeyboardInterrupt:
+            print(chr(10) + "(Entrada cancelada. Escribe 'salir' para terminar)")
+            buffer_codigo = []
+            nivel_llaves = 0
+        except EOFError:
+            print(chr(10) + "Saliendo del bosque a la fuerza.")
+            break
+
+
+def main():
+    if len(sys.argv) == 1:
+        iniciar_repl()
+        return
+
+    args = sys.argv[1:]
+    solo_check = "--check" in args
+    ver_tokens = "--tokens" in args
+    ver_arbol = "--tree" in args
+
+    archivos = [a for a in args if not a.startswith("--")]
+
+    if not archivos:
+        iniciar_repl()
+        return
+
+    ruta_archivo = archivos[0]
+    if not os.path.exists(ruta_archivo):
+        print(f"Error: No se encontro el archivo '{ruta_archivo}'")
+        sys.exit(1)
+
+    with open(ruta_archivo, "r", encoding="utf-8") as f:
+        codigo = f.read()
+
+    input_stream = InputStream(codigo)
+    lexer = DaZeLexer(input_stream)
+
+    if ver_tokens:
+        token_stream = CommonTokenStream(lexer)
+        token_stream.fill()
+        for tok in token_stream.tokens:
+            print(tok)
+        return
+
+    error_listener = DaZeErrorListener()
+    lexer.removeErrorListeners()
+    lexer.addErrorListener(error_listener)
+
+    token_stream = CommonTokenStream(lexer)
+    parser = DaZeParser(token_stream)
+    parser.removeErrorListeners()
+    parser.addErrorListener(error_listener)
+
+    tree = parser.programa()
+
+    errores = getattr(error_listener, "errors", [])
+    if errores:
+        for err in errores:
+            tipo = getattr(err, "error_type", "Sintactico")
+            linea = getattr(err, "line", "?")
+            col = getattr(err, "column", "?")
+            msg = getattr(err, "message", getattr(err, "msg", str(err)))
+            print(f"[Error {tipo}] Linea {linea}:{col} -> {msg}")
+        sys.exit(1)
+
+    if solo_check:
+        print(f"El archivo '{ruta_archivo}' es sintacticamente valido.")
+        return
+
+    if ver_arbol:
+        renderizar_arbol(tree, parser)
+        return
+
+    base_dir = os.path.dirname(os.path.abspath(ruta_archivo))
+    visitor = DaZeSemanticVisitor(base_dir=base_dir)
+    visitor.visit(tree)
+    print(f"Ejecucion completada con exito para '{ruta_archivo}'.")
+
+
+if __name__ == "__main__":
+    main()

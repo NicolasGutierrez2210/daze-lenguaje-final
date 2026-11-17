@@ -1,0 +1,21 @@
+id,edad,nivel_edu,ingreso_mensual,sex,anios_esc
+1,56,Secundaria completa,5375,Mujer,12
+2,52,Medio superior y superior,12900,Hombre,17
+3,25,Medio superior y superior,12000,Hombre,15
+4,50,Secundaria completa,3870,Mujer,9
+5,41,Medio superior y superior,1000,Mujer,17
+6,36,Secundaria completa,4085,Mujer,9
+7,23,Medio superior y superior,3440,Mujer,16
+8,59,Primaria incompleta,4300,Hombre,4
+9,37,Secundaria completa,4000,Hombre,9
+10,18,Prrimaria completa,4300,Hombre,8
+11,44,Medio superior y superior,9000,Hombre,17
+12,35,Medio superior y superior,24000,Mujer,12
+13,15,Primaria incompleta,3870,Hombre,1
+14,36,Secundaria completa,7740,Hombre,9
+15,30,Medio superior y superior,4500,Hombre,12
+16,35,Secundaria completa,8260,Hombre,9
+17,46,Medio superior y superior,5160,Hombre,12
+18,69,Prrimaria completa,1075,Mujer,6
+19,35,Medio superior y superior,12000,Hombre,12
+20,26,Prrimaria completa,3225,Hombre,7

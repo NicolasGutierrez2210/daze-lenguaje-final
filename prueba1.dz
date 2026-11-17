@@ -1,0 +1,15 @@
+# 1. Cargas el CSV real en una Tabla
+plantilla = fichar("datos/rendimiento_jugadores.csv");
+
+# 2. Creas dos listas vacías y las llenas recorriendo cada fila
+mins = [];
+gols = [];
+
+ronda (jugador en plantilla) {
+    mins = mins + [jugador["minutos"]];
+    gols = gols + [jugador["goles"]];
+}
+
+# 3. Entrenas el modelo con los datos que vinieron del CSV
+modelo = regresion_lineal(mins, gols);
+proyectar(predecir_regresion(modelo, 1000));
