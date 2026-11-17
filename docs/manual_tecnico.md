@@ -73,6 +73,7 @@ Implementa las clases `Tabla` y `GrupoTabla` sin depender de `pandas`. Al leer a
   con criterio de parada $|x_{k+1} - x_k| < 10^{-7}$.
 * **Trigonometría (`seno`, `coseno`, `tangente`)**: Expansión en Series de Taylor previa reducción modular al intervalo $[-\pi, \pi]$.
 * **Exponencial, Sigmoide, Primalidad y Memoria (`exp`, `sigmoide`, `es_primo`, `memoria`)**: Cálculo puro de $e^x$ por reducción de rango y Series de Taylor, activación logística $\sigma(x)=\frac{1}{1+e^{-x}}$, verificación de primos hasta $\sqrt{n}$ y perfilado de RAM en Bytes/KB mediante `tracemalloc`.
+* **Exponencial, Sigmoide, Primalidad y Memoria (`exp`, `sigmoide`, `es_primo`, `memoria`)**: Cálculo puro de $e^x$ por reducción de rango y Series de Taylor, activación logística $\sigma(x)=\frac{1}{1+e^{-x}}$, verificación de primos hasta $\sqrt{n}$ y perfilado de RAM en Bytes/KB mediante `tracemalloc`.
 * **Desviación Estándar (`desviar`)**: Varianza muestral combinada con la raíz babilónica pura:
   $$s = \sqrt{\frac{1}{N-1}\sum_{i=1}^{N}(x_i - \bar{x})^2}$$
 
@@ -85,6 +86,8 @@ Implementa las clases `Tabla` y `GrupoTabla` sin depender de `pandas`. Al leer a
 * **Agrupamiento K-Means (`agruparkmedias` / `agrupar_kmedias`)**: Inicializa $k$ centroides, calcula distancias euclidianas multidimensionales:
   $$d(p, q) = \sqrt{\sum_{j=1}^D (p_j - q_j)^2}$$
   reasigna etiquetas y actualiza centroides por promedio vectorial iterativo.
+
+* **Perceptrón Multicapa (`entrenar_mlp`, `estimar_mlp`, `clasificar_mlp`)**: Red neuronal multicapa (`2-4-1`) con activación sigmoide y entrenamiento por *Backpropagation* en Python puro para resolver problemas no linealmente separables como la compuerta XOR.
 
 * **Perceptrón Multicapa (`entrenar_mlp`, `estimar_mlp`, `clasificar_mlp`)**: Red neuronal multicapa (`2-4-1`) con activación sigmoide y entrenamiento por *Backpropagation* en Python puro para resolver problemas no linealmente separables como la compuerta XOR.
 
