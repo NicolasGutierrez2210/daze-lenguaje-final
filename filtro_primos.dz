@@ -1,0 +1,52 @@
+# Función (tactica) pura que determina si un número entero es primo
+tactica es_primo(n) {
+    # Todo número menor o igual a 1 no es primo
+    si (n <= 1) {
+        resultado falso;
+    }
+    
+    # El 2 es el único número primo par
+    si (n == 2) {
+        resultado verdadero;
+    }
+    
+    # Descartamos pares mayores a 2 y decimales (n % 1 != 0)
+    si (n % 2 == 0 o n % 1 != 0) {
+        resultado falso;
+    }
+    
+    # Probamos divisores impares desde 3 hasta la raíz cuadrada de n
+    divisor = 3;
+    limite = raiz(n);
+    en_juego (divisor <= limite) {
+        si (n % divisor == 0) {
+            resultado falso;
+        }
+        divisor = divisor + 2;
+    }
+    
+    resultado verdadero;
+}
+
+# --- EJEMPLO 1: Filtrar una tabla CSV por columna numérica (ej. dorsal o goles) ---
+plantilla = fichar("datos/rendimiento_jugadores.csv");
+
+jugadores_dorsal_primo = plantilla
+    |> convocar(dorsal, nombre, posicion, goles)
+    |> descartar(es_primo(dorsal));
+
+proyectar("Jugadores con dorsal primo:");
+proyectar(jugadores_dorsal_primo);
+
+# --- EJEMPLO 2: Filtrar una lista numérica cualquiera ---
+numeros = [1, 2, 3, 4, 7, 10, 11, 15, 17, 20, 23, 25, 29];
+primos_lista = [];
+
+ronda (num en numeros) {
+    si (es_primo(num)) {
+        primos_lista = primos_lista + [num];
+    }
+}
+
+proyectar("Primos filtrados de la lista:");
+proyectar(primos_lista);
