@@ -3,7 +3,7 @@
 **Versión:** 1.0.0  
 **Extensión de archivos:** `.dz`  
 **Dominio:** Analítica Deportiva y Ciencia de Datos Tabular  
-**Repositorio Oficial:** [https://github.com/27saya/proyecto_lenguajes.git](https://github.com/27saya/proyecto_lenguajes.git)
+**Repositorio Oficial:** [https://github.com/NicolasGutierrez2210/daze-lenguaje-final.git](https://github.com/NicolasGutierrez2210/daze-lenguaje-final.git)
 
 ---
 
@@ -23,7 +23,7 @@
 
 ```bash
 # 1. Clonar el repositorio oficial
-git clone https://github.com/27saya/proyecto_lenguajes.git
+git clone https://github.com/NicolasGutierrez2210/daze-lenguaje-final.git
 cd proyecto_lenguajes
 
 # 2. Crear y activar el entorno virtual
@@ -137,7 +137,7 @@ Las transformaciones tabulares se encadenan secuencialmente de forma inmutable:
 
 ### 4.4. Matemática Pura y Machine Learning
 
-* **Funciones matemáticas:** `raiz(x)`, `seno(x)`, `coseno(x)`, `tangente(x)`, `potencia(base, exp)`, `abs(x)`.
+* **Funciones matemáticas, primalidad y memoria:** `raiz(x)`, `seno(x)`, `coseno(x)`, `tangente(x)`, `potencia(base, exp)`, `abs(x)`, `exp(x)`, `sigmoide(x)`, `es_primo(n)`, `memoria()`.
 * **Correlación de Pearson:**
   ```daze
   r = correlacion(lista_x, lista_y);
@@ -150,6 +150,13 @@ Las transformaciones tabulares se encadenan secuencialmente de forma inmutable:
 * **Agrupamiento No Supervisado K-Means:**
   ```daze
   clusters = agruparkmedias(matriz_datos, k);
+  ```
+
+* **Perceptrón Multicapa (MLP - Backpropagation):**
+  ```daze
+  red = entrenar_mlp(X_xor, Y_xor, 3000, 0.8);
+  prob = estimar_mlp(red, [1, 0]);
+  clase = clasificar_mlp(red, [1, 0]);
   ```
 
 ### 4.5. Visualización Gráfica (`pizarra`)

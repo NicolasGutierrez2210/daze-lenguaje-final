@@ -5,7 +5,10 @@ A continuacion se presenta la especificacion sintactica formal de DaZe adaptada 
 ```ebnf
 programa            ::= { sentencia } EOF ;
 
-sentencia           ::= asignacion
+sentencia           ::= asignacion_indexada
+                      | asignacion
+                      | bucle_mientras_stmt
+                      | bucle_para_stmt
                       | pipeline_stmt
                       | graficar_stmt
                       | guardar_stmt
@@ -16,6 +19,9 @@ sentencia           ::= asignacion
                       | llamada_stmt ;
 
 asignacion          ::= identificador '=' expr [ ';' ] ;
+asignacion_indexada ::= identificador '[' expr ']' '=' expr [ ';' ] ;
+bucle_mientras_stmt ::= ( 'en_juego' | 'enjuego' | 'mientras' ) '(' expr ')' '{' { sentencia } '}' [ ';' ] ;
+bucle_para_stmt     ::= 'ronda' '(' identificador 'en' expr ')' '{' { sentencia } '}' [ ';' ] ;
 
 pipeline_stmt       ::= [ identificador '=' ] expr { '|>' operacion_pipeline }+ [ ';' ] ;
 

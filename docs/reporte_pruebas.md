@@ -1,8 +1,8 @@
 # Reporte de Pruebas Automatizadas y Regresión: DaZe
 
 **Framework de Pruebas:** `unittest` (Biblioteca Estándar de Python)  
-**Total de Pruebas Ejecutadas:** 48  
-**Estado Global:** 48 / 48 EXITOSAS (`OK`)  
+**Total de Pruebas Ejecutadas:** 49  
+**Estado Global:** 49 / 49 EXITOSAS (`OK`)  
 **Tiempo de Ejecución:** ~0.3 segundos
 
 ---
@@ -41,3 +41,13 @@ Durante la consolidación de todas las capacidades del lenguaje (incorporación 
 * **Compatibilidad Léxica y Sintáctica:** Las reglas añadidas para bucles iterativos y funciones nativas no introdujeron ambigüedades ni conflictos en las pruebas del Front-End (`test_lexer`, `test_parser`, `test_errors`).
 * **Integridad del Motor Tabular y Semántico:** Todas las pruebas del motor tabular y descriptivo (`test_core_tabla`, `test_estadistica`, `test_semantic`, `test_interpreter`) mantuvieron el 100% de aprobación tras integrar el despachador gráfico nativo en `visitor.py`.
 * **Validación Integral del Caso de Estudio:** Adicionalmente a las pruebas unitarias, se verificó la ejecución de extremo a extremo de `caso_estudio.dz`, comprobando la creación física en disco de `salidas/resumen_posiciones.csv` y las 4 imágenes PNG (`1_goles_por_posicion.png`, `2_dispersion_minutos_contribucion.png`, `3_histograma_minutos.png` y `4_lineas_top_ofensivo.png`).
+
+## 4. Validación de Scripts de Sustentación Final
+
+| Script `.dz` | Requerimiento Validado | Salidas Verificadas |
+| :--- | :--- | :--- |
+| `factorial_memoria.dz` | Cálculo iterativo de `5!` a `100!` con medición de RAM (`memoria()`). | Reporte en consola (Bytes y KB). |
+| `sigmoide.dz` | Evaluación de $\sigma(x)$ en `[-6, 6]` y trazado en S. | Vista ASCII + `salidas/funcion_sigmoide.png`. |
+| `perceptron_xor.dz` | Entrenamiento MLP `2-4-1` para XOR, estimador y gráficas. | `salidas/xor_curva_error.png` y `salidas/xor_estimador.png`. |
+| `eda_socioeconomico.dz` | EDA completo sobre `datos/data.csv` con pipeline, MCO y K-Means. | `salidas/eda_resumen_educacion.csv` y 4 gráficas `eda_*.png`. |
+| `filtro_primos.dz` | Filtro funcional `tactica filtrar_primos` sobre listas y tablas (`goles`, `dorsal`, etc.). | Listas y tablas filtradas en consola. |

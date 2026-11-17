@@ -29,6 +29,8 @@ DaZe es un lenguaje de dominio especifico (DSL) disenado para modelar flujos de 
 | Nulo | Ausencia de registro o valor faltante | `nulo`, `null` |
 | Lista | Coleccion de elementos o columnas | `[dorsal, goles]`, `["A", "B"]` |
 | Tabla | Coleccion tabular cargada o derivada | Resultado de `fichar(...)` o `|>` |
+| Diccionario | Mapa clave-valor asociativo | `{"x": 0, "y": 0.5}` |
+| Pila / Cola | Estructuras lineales LIFO y FIFO | `pila()`, `cola()` |
 
 ---
 
